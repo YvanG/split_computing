@@ -30,10 +30,10 @@ class SCProcess:
 
 
 if __name__ == '__main__':
-    import torch
+    import numpy as np
 
-    model_name = 'ut_yolo8_head_only'
-    rand_input = torch.rand((1, 3, 640, 640))
+    model_name = 'mm_yolox_tail_only'
+    rand_input = np.round(np.random.rand(640, 640, 3)*255).astype(np.uint8)
 
     sc = SCProcess(model_name=model_name)
     output_head = sc.process_head(data=rand_input)

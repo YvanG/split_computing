@@ -1,2 +1,4 @@
 .idea/
 checkpoints/
+configs/
+*.pt
