@@ -30,11 +30,12 @@ class SCProcess:
 
 
 if __name__ == '__main__':
-    import numpy as np
+    import cv2
 
-    model_name = 'mm_yolox_tail_only'
-    rand_input = np.round(np.random.rand(640, 640, 3)*255).astype(np.uint8)
+    model_name = 'ut_yolo8_head_only'
+
+    input_img = cv2.imread('models/images/sample.jpg')
 
     sc = SCProcess(model_name=model_name)
-    output_head = sc.process_head(data=rand_input)
+    output_head = sc.process_head(data=input_img)
     output_tail = sc.process_tail(data=output_head)
