@@ -1,0 +1,2 @@
+donwload weights from links in split_computing/configs/README.md
+files are too large to be uploaded to github
