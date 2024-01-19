@@ -57,7 +57,7 @@ class SplitDetectionModel(nn.Module):
             self.inplace = cfg.inplace
             self.names = cfg.names
             self.yaml = cfg.yaml
-            self.nc = cfg.nc
+            self.nc = len(self.names)  # cfg.nc
             self.task = cfg.task
             self.pt = True
 
@@ -68,7 +68,7 @@ class SplitDetectionModel(nn.Module):
     def info(self, detailed=False, verbose=True, imgsz=640):
         return model_info(self, detailed=detailed, verbose=verbose, imgsz=imgsz)
 
-    def forward_head(self, x, output_from=[]):
+    def forward_head(self, x, output_from=()):
         y, dt = [], []  # outputs
         for i, m in enumerate(self.head):
             if m.f != -1:  # if not from previous layer
@@ -79,8 +79,15 @@ class SplitDetectionModel(nn.Module):
             else:
                 y.append(None)
 
+        # remove unnecessary layers outputs
+        for mi in range(len(y)):
+            if mi not in output_from:
+                y[mi] = None
+
+        # add last layer output
         if y[i] is None:
             y[i] = x
+
         return {"layers_output": y, "last_layer_idx": i}
 
     def forward_tail(self, x):
@@ -142,7 +149,7 @@ class SplitDetectionPredictor(DetectionPredictor):
         results = []
         for i, pred in enumerate(preds):
             if orig_imgs is None:
-                orig_img = np.empty([0,0,0,0])
+                orig_img = np.empty([0, 0, 0, 0])
                 img_path = ""
             else:
                 orig_img = orig_imgs[i]
