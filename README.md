@@ -34,13 +34,12 @@ python yolov8/yolo8_predict.py \
   --bottleneck
 ```
 
-
 - split options:
   - a
   - b
   - c
 
-- model options
+- model options (trained models)
   - split - a
     - checkpoints/101a-bottleneck_a16/weights/last.pt
     - checkpoints/102a-bottleneck_a32/weights/last.pt
@@ -65,4 +64,19 @@ python yolov8/yolo8_predict.py \
     - checkpoints/118a-bottleneck_c32/weights/last.pt  (trained with frozen weights)
     - checkpoints/119a-bottleneck_c64/weights/last.pt  (trained with frozen weights)
 
+- model options (random weights)
+  - split - a
+    - configs/yolo8/models/yolov8m_a16_bottleneck.yaml
+    - configs/yolo8/models/yolov8m_a32_bottleneck.yaml
+    - configs/yolo8/models/yolov8m_a64_bottleneck.yaml
+ 
+  - split - b
+    - configs/yolo8/models/yolov8m_b16_bottleneck.yaml
+    - configs/yolo8/models/yolov8m_b32_bottleneck.yaml
+    - configs/yolo8/models/yolov8m_b64_bottleneck.yaml
+
+  - split - c
+    - configs/yolo8/models/yolov8m_c16_bottleneck.yaml
+    - configs/yolo8/models/yolov8m_c32_bottleneck.yaml
+    - configs/yolo8/models/yolov8m_c64_bottleneck.yaml
 
