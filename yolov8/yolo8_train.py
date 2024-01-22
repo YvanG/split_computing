@@ -1,9 +1,8 @@
-from ultralytics import YOLO
 import argparse
 import torch
 from collections import OrderedDict
 from functools import partial
-
+from yolo8_modules import YOLO2
 
 def get_args_parser():
     parser = argparse.ArgumentParser('', add_help=False)
@@ -105,9 +104,9 @@ if __name__ == "__main__":
         "seed": args.seed,
     }
 
-    model = YOLO(args.model_name)
+    model = YOLO2(args.model_name)
     if args.yolo_checkpoint:
-        model_0 = YOLO(args.yolo_checkpoint)
+        model_0 = YOLO2(args.yolo_checkpoint)
         missing_names = load_parameters(model, args.yolo_checkpoint)
         model.overrides = model_0.overrides
         model.ckpt_path = model_0.ckpt_path
