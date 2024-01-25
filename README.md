@@ -41,42 +41,51 @@ python yolov8/yolo8_predict.py \
 
 - model options (trained models)
   - split - a
-    - checkpoints/101a-bottleneck_a16/weights/last.pt
-    - checkpoints/102a-bottleneck_a32/weights/last.pt
-    - checkpoints/103a-bottleneck_a64/weights/last.pt
-    - checkpoints/111a-bottleneck_a16/weights/last.pt  (trained with frozen weights)
-    - checkpoints/112a-bottleneck_a32/weights/last.pt  (trained with frozen weights)
-    - checkpoints/113a-bottleneck_a64/weights/last.pt  (trained with frozen weights)
+    - checkpoints/121a-bottleneck2_a16/weights/last.pt
+    - checkpoints/122a-bottleneck2_a32/weights/last.pt
+    - checkpoints/123a-bottleneck2_a64/weights/last.pt
+    - 
+    - checkpoints/131a-bottleneck2_a16/weights/last.pt  (trained with frozen weights)
+    - checkpoints/132a-bottleneck2_a32/weights/last.pt  (trained with frozen weights)
+    - checkpoints/133a-bottleneck2_a64/weights/last.pt  (trained with frozen weights)
+    - 
   
   - split - b
-    - checkpoints/104a-bottleneck_b16/weights/last.pt
-    - checkpoints/105a-bottleneck_b32/weights/last.pt
-    - checkpoints/106a-bottleneck_b64/weights/last.pt
-    - checkpoints/114a-bottleneck_b16/weights/last.pt  (trained with frozen weights)
-    - checkpoints/115a-bottleneck_b32/weights/last.pt  (trained with frozen weights)
-    - checkpoints/116a-bottleneck_b64/weights/last.pt  (trained with frozen weights)
+    - checkpoints/124a-bottleneck2_b16/weights/last.pt
+    - checkpoints/125a-bottleneck2_b32/weights/last.pt
+    - checkpoints/126a-bottleneck2_b64/weights/last.pt
+    - 
+    - checkpoints/134a-bottleneck2_b16/weights/last.pt  (trained with frozen weights)
+    - checkpoints/135a-bottleneck2_b32/weights/last.pt  (trained with frozen weights)
+    - checkpoints/136a-bottleneck2_b64/weights/last.pt  (trained with frozen weights)
+    - 
   
   - split - c
-    - checkpoints/107a-bottleneck_c16/weights/last.pt
-    - checkpoints/108a-bottleneck_c32/weights/last.pt
-    - checkpoints/109a-bottleneck_c64/weights/last.pt
-    - checkpoints/117a-bottleneck_c16/weights/last.pt  (trained with frozen weights)
-    - checkpoints/118a-bottleneck_c32/weights/last.pt  (trained with frozen weights)
-    - checkpoints/119a-bottleneck_c64/weights/last.pt  (trained with frozen weights)
+    - checkpoints/127a-bottleneck2_c16/weights/last.pt
+    - checkpoints/128a-bottleneck2_c32/weights/last.pt
+    - checkpoints/129a-bottleneck2_c64/weights/last.pt
+    - 
+    - checkpoints/137a-bottleneck2_c16/weights/last.pt  (trained with frozen weights)
+    - checkpoints/138a-bottleneck2_c32/weights/last.pt  (trained with frozen weights)
+    - checkpoints/139a-bottleneck2_c64/weights/last.pt  (trained with frozen weights)
+    - 
 
 - model options (random weights)
   - split - a
-    - configs/yolo8/models/yolov8m_a16_bottleneck.yaml
-    - configs/yolo8/models/yolov8m_a32_bottleneck.yaml
-    - configs/yolo8/models/yolov8m_a64_bottleneck.yaml
+    - configs/yolo8/models/yolov8m_a16_bottleneck2.yaml
+    - configs/yolo8/models/yolov8m_a32_bottleneck2.yaml
+    - configs/yolo8/models/yolov8m_a64_bottleneck2.yaml
+    - configs/yolo8/models/yolov8m_a_bottleneck3.yaml
  
   - split - b
-    - configs/yolo8/models/yolov8m_b16_bottleneck.yaml
-    - configs/yolo8/models/yolov8m_b32_bottleneck.yaml
-    - configs/yolo8/models/yolov8m_b64_bottleneck.yaml
+    - configs/yolo8/models/yolov8m_b16_bottleneck2.yaml
+    - configs/yolo8/models/yolov8m_b32_bottleneck2.yaml
+    - configs/yolo8/models/yolov8m_b64_bottleneck2.yaml
+    - configs/yolo8/models/yolov8m_b_bottleneck3.yaml
 
   - split - c
-    - configs/yolo8/models/yolov8m_c16_bottleneck.yaml
-    - configs/yolo8/models/yolov8m_c32_bottleneck.yaml
-    - configs/yolo8/models/yolov8m_c64_bottleneck.yaml
+    - configs/yolo8/models/yolov8m_c16_bottleneck2.yaml
+    - configs/yolo8/models/yolov8m_c32_bottleneck2.yaml
+    - configs/yolo8/models/yolov8m_c64_bottleneck2.yaml
+    - configs/yolo8/models/yolov8m_c_bottleneck3.yaml
 
