@@ -1,11 +1,14 @@
 import contextlib
 from copy import deepcopy
+from pathlib import Path
 
 import numpy as np
 import torch
 import torch.nn as nn
+from ultralytics.data import converter
 from ultralytics.data.augment import LetterBox
 from ultralytics.engine.results import Results
+from ultralytics.models.yolo.detect import DetectionTrainer, DetectionValidator
 from ultralytics.models.yolo.detect.predict import DetectionPredictor
 from ultralytics.nn import yaml_model_load  # , parse_model
 from ultralytics.nn.modules import (
@@ -40,13 +43,12 @@ from ultralytics.nn.modules import (
 )
 from ultralytics.utils import LOGGER, colorstr, RANK
 from ultralytics.utils import ops
+from ultralytics.utils.metrics import ConfusionMatrix, DetMetrics
 from ultralytics.utils.torch_utils import (
     initialize_weights,
     make_divisible,
     model_info,
 )
-
-from ultralytics.models.yolo.detect import DetectionTrainer
 
 
 class SplitDetectionModel(nn.Module):
@@ -78,6 +80,7 @@ class SplitDetectionModel(nn.Module):
                 m.bias_init()  # only run once
             else:
                 self.stride = torch.Tensor([32])  # default stride for i.e. RTDETR
+            self.stride = torch.Tensor([16, 32, 64])
 
             # Init weights, biases
             initialize_weights(self)
@@ -368,6 +371,77 @@ class DetectionTrainer2(DetectionTrainer):
         return model
 
 
+class DetMetrics2(DetMetrics):
+    def __init__(self, save_dir=Path('.'), plot=False, on_plot=None, names=()) -> None:
+        """Initialize a DetMetrics instance with a save directory, plot flag, callback function, and class names."""
+        super().__init__(save_dir=save_dir, plot=plot, on_plot=on_plot, names=names)
+        self._keys = ['metrics/precision(B)', 'metrics/recall(B)', 'metrics/mAP50(B)', 'metrics/mAP50-95(B)']
+
+    @property
+    def keys(self):
+        """Returns a list of keys for accessing specific metrics."""
+        return self._keys
+
+
+class DetectionValidator2(DetectionValidator):
+    def __init__(self, dataloader=None, save_dir=None, pbar=None, args=None, _callbacks=None):
+        """Initialize detection model with necessary variables and settings."""
+        super().__init__(dataloader, save_dir, pbar, args, _callbacks)
+        self.nt_per_class = None
+        self.is_coco = True
+        self.class_map = None
+        self.args.task = "detect"
+        self.metrics = DetMetrics2(save_dir=self.save_dir, on_plot=self.on_plot)
+        self.iouv = torch.linspace(0.5, 0.95, 10)  # iou vector for mAP@0.5:0.95
+        self.niou = self.iouv.numel()
+        self.lb = []  # for autolabelling
+
+    def init_metrics(self, model):
+        """Initialize evaluation metrics for YOLO."""
+        val = self.data.get(self.args.split, '')  # validation path
+        self.is_coco = True  # isinstance(val, str) and 'coco' in val and val.endswith(f'{os.sep}val2017.txt')  # is COCO
+        self.class_map = converter.coco80_to_coco91_class() if self.is_coco else list(range(1000))
+        self.args.save_json |= self.is_coco and not self.training  # run on final val if training COCO
+        self.names = model.names
+        self.nc = len(model.names)
+        self.metrics.names = self.names
+        self.metrics.plot = self.args.plots
+        self.confusion_matrix = ConfusionMatrix(nc=self.nc, conf=self.args.conf)
+        self.seen = 0
+        self.jdict = []
+        self.stats = []
+
+    def eval_json(self, stats):
+        self.is_coco = True
+        """Evaluates YOLO output in JSON format and returns performance statistics."""
+        if self.args.save_json and self.is_coco and len(self.jdict):
+            anno_json = self.data["path"] / "annotations/instances_val2017.json"  # annotations
+            pred_json = self.save_dir / "predictions.json"  # predictions
+            LOGGER.info(f"\nEvaluating pycocotools mAP using {pred_json} and {anno_json}...")
+            try:  # https://github.com/cocodataset/cocoapi/blob/master/PythonAPI/pycocoEvalDemo.ipynb
+                # check_requirements("pycocotools>=2.0.6")
+                from pycocotools.coco import COCO  # noqa
+                from pycocotools.cocoeval import COCOeval  # noqa
+
+                for x in anno_json, pred_json:
+                    assert x.is_file(), f"{x} file not found"
+                anno = COCO(str(anno_json))  # init annotations api
+                pred = anno.loadRes(str(pred_json))  # init predictions api (must pass string, not Path)
+                eval = COCOeval(anno, pred, "bbox")
+                if self.is_coco:
+                    eval.params.imgIds = [int(Path(x).stem) for x in self.dataloader.dataset.im_files]  # images to eval
+                eval.evaluate()
+                eval.accumulate()
+                eval.summarize()
+                stats[self.metrics.keys[-1]], stats[self.metrics.keys[-2]] = eval.stats[:2]  # update mAP50-95 and mAP50
+                self.metrics._keys.append("metrics/mAP75(B)")
+                stats["metrics/mAP75(B)"] = eval.stats[2]
+                print(stats)
+            except Exception as e:
+                LOGGER.warning(f"pycocotools unable to run: {e}")
+        return stats
+
+
 class YOLO2(YOLO):
     """YOLO (You Only Look Once) object detection model."""
 
@@ -384,7 +458,7 @@ class YOLO2(YOLO):
             "detect": {
                 "model": DetectionModel2,
                 "trainer": DetectionTrainer2,
-                "validator": yolo.detect.DetectionValidator,
+                "validator": DetectionValidator2,
                 "predictor": yolo.detect.DetectionPredictor,
             },
             "segment": {
