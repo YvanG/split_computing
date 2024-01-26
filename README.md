@@ -40,50 +40,51 @@ python yolov8/yolo8_predict.py \
   - c
 
 - model options (trained models)
-  - split - a
+  - split - a (early split)
     - checkpoints/121a-bottleneck2_a16/weights/last.pt
     - checkpoints/122a-bottleneck2_a32/weights/last.pt
     - checkpoints/123a-bottleneck2_a64/weights/last.pt
-    - 
+    - checkpoints/201a-bottleneck_a/weights/last.pt
     - checkpoints/131a-bottleneck2_a16/weights/last.pt  (trained with frozen weights)
     - checkpoints/132a-bottleneck2_a32/weights/last.pt  (trained with frozen weights)
     - checkpoints/133a-bottleneck2_a64/weights/last.pt  (trained with frozen weights)
-    - 
+    - checkpoints/211a-bottleneck_a/weights/last.pt
   
-  - split - b
+  - split - b (middle split)
     - checkpoints/124a-bottleneck2_b16/weights/last.pt
     - checkpoints/125a-bottleneck2_b32/weights/last.pt
     - checkpoints/126a-bottleneck2_b64/weights/last.pt
-    - 
+    - checkpoints/202a-bottleneck_b/weights/last.pt
     - checkpoints/134a-bottleneck2_b16/weights/last.pt  (trained with frozen weights)
     - checkpoints/135a-bottleneck2_b32/weights/last.pt  (trained with frozen weights)
     - checkpoints/136a-bottleneck2_b64/weights/last.pt  (trained with frozen weights)
-    - 
+    - checkpoints/212a-bottleneck_b/weights/last.pt
   
-  - split - c
+  - split - c (late split)
     - checkpoints/127a-bottleneck2_c16/weights/last.pt
     - checkpoints/128a-bottleneck2_c32/weights/last.pt
     - checkpoints/129a-bottleneck2_c64/weights/last.pt
-    - 
+    - checkpoints/203a-bottleneck_c/weights/last.pt
     - checkpoints/137a-bottleneck2_c16/weights/last.pt  (trained with frozen weights)
     - checkpoints/138a-bottleneck2_c32/weights/last.pt  (trained with frozen weights)
     - checkpoints/139a-bottleneck2_c64/weights/last.pt  (trained with frozen weights)
-    - 
+    - checkpoints/213a-bottleneck_c/weights/last.pt
+
 
 - model options (random weights)
-  - split - a
+  - split - a (early split)
     - configs/yolo8/models/yolov8m_a16_bottleneck2.yaml
     - configs/yolo8/models/yolov8m_a32_bottleneck2.yaml
     - configs/yolo8/models/yolov8m_a64_bottleneck2.yaml
     - configs/yolo8/models/yolov8m_a_bottleneck3.yaml
  
-  - split - b
+  - split - b (middle split)
     - configs/yolo8/models/yolov8m_b16_bottleneck2.yaml
     - configs/yolo8/models/yolov8m_b32_bottleneck2.yaml
     - configs/yolo8/models/yolov8m_b64_bottleneck2.yaml
     - configs/yolo8/models/yolov8m_b_bottleneck3.yaml
 
-  - split - c
+  - split - c (late split)
     - configs/yolo8/models/yolov8m_c16_bottleneck2.yaml
     - configs/yolo8/models/yolov8m_c32_bottleneck2.yaml
     - configs/yolo8/models/yolov8m_c64_bottleneck2.yaml
