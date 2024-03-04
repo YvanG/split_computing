@@ -9,6 +9,7 @@ from ultralytics import YOLO
 from ultralytics.engine.results import Results
 
 from yolo8_modules import SplitDetectionPredictor, SplitDetectionModel
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 def get_args_parser():
@@ -80,27 +81,28 @@ if __name__ == "__main__":
     split_layer, save_layers = splits[args.split]
 
     # input
-    image = "../assets/coco_train_2017_small/000000005802.jpg"
-    image = torch.rand(1, 3, 640, 640)
+    image = torch.rand(1, 3, 640, 640, device=device)
 
     # head prediction
     pretrained_model = YOLO(args.model_path).model
     model_head = SplitDetectionModel(pretrained_model, split_layer=split_layer)
     model_head = model_head.eval()
+    model_head = model_head.to(device)
     head_output = predict_head(model_head, image, save_layers)
 
     # debug values
-    shapes = [o.shape for o in head_output["layers_output"] if o is not None]
+    layers_output_shapes = [o.shape for o in head_output["layers_output"] if o is not None]
 
     # tail prediction
     pretrained_model = YOLO(args.model_path).model
     model_tail = SplitDetectionModel(pretrained_model, split_layer=split_layer)
     model_tail = model_tail.eval()
+    model_tail = model_tail.to(device)
     results = predict_tail(model_tail, head_output)
 
     # print(results.boxes, "\n")
     print("head output shapes:")
-    for o in shapes:
+    for o in layers_output_shapes:
         print(o)
 
     print(f"\nhead layers: {len(model_head.head)}\ntail layers: {len(model_tail.tail)}")

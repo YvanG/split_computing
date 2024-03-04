@@ -7,13 +7,10 @@ from yolo8_modules import YOLO2
 def get_args_parser():
     parser = argparse.ArgumentParser('', add_help=False)
 
-    parser.add_argument('--model_name',
-                        default='../configs/yolo8/models/yolov8m_a16_bottleneck.yaml',
-                        type=str)
-    parser.add_argument('--data_path',
-                        default="../configs/yolo8/datasets/coco128.yaml", type=str)
-    parser.add_argument('--project', default="", type=str)
-    parser.add_argument('--name', default="", type=str)
+    parser.add_argument('--model_name',  default='', type=str)
+    parser.add_argument('--data_path', default='', type=str)
+    parser.add_argument('--project', default='', type=str, help='Wandb project name.')
+    parser.add_argument('--name', default='', type=str, help='Wandb run name.')
     parser.add_argument('--workers', default=4, type=int)
     parser.add_argument('--epochs', default=12, type=int)
     parser.add_argument('--optimizer', default="AdamW", type=str)
@@ -24,7 +21,7 @@ def get_args_parser():
     parser.add_argument('--save_period', default=-1, type=int)
     parser.add_argument('--seed', default=0, type=int)
 
-    parser.add_argument('--yolo_checkpoint', default="", type=str)
+    parser.add_argument('--yolo_checkpoint', default='', type=str)
     parser.add_argument('--freez', default=False, action='store_true')
 
     return parser

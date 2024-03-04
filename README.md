@@ -1,4 +1,4 @@
-# Split Computing Project
+# Split Computing
 
 
 ## Install environment
@@ -7,86 +7,65 @@ conda create -n split_computing
 pip install ultralytics=8.0.227
 ```
 
-## Model architecture
-![splits](/assets/yolo8-splits.png)
+## YOLOv8 Split Locations Diagram
+![splits](/assets/yolo8-diagram.png)
 
-## Run prediction
-### Model
-```bash 
-python yolov8/yolo8_predict.py \
-  --model_path checkpoints/100a-baseline/weights/last.pt \
-  --split a
+
+## Data preparation
+All models are trained and validated on [COCO](https://cocodataset.org/#home) dataset.
+Dataset should be in YOLOv8 format:
 ```
-- model options:
-  - checkpoints/100a-baseline/weights/last.pt  (our pre-trained model)
-  - configs/yolo8/yolov8m.yaml  (new model with random weights)
-
-- split options:
-  - a
-  - b
-  - c
-
-### Model - bottleneck
-```bash 
-python yolov8/yolo8_predict.py \
-  --model_path checkpoints/101a-bottleneck_a16/weights/last.pt \
-  --split a \
-  --bottleneck
+  coco 
+  │
+  └───images
+  │   │
+  │   └───val2017
+  │   │    │   image_01.jpg
+  │   │    │   ...
+  │   │
+  │   └───train2017
+  │        │   image_02.jpg
+  │        │   ...
+  │   
+  └───labels
+  │   │
+  │   └───val2017
+  │   │    │   image_01.txt
+  │   │    │   ...
+  │   │
+  │   └───train2017
+  │        │   image_02.txt
+  │        │   ...
+  │   
+  └───annotations     # necessary only for evaluation
+  │   │ 
+  │   │   instances_val2017.json    
 ```
 
-- split options:
-  - a
-  - b
-  - c
+Some of the bottlenecks reduce input image 4 times. 
+During validation, it is necessary to ensure that the size of all images is divisible by 64.  
+We have ensured this by resizing and padding all validation images.
+```bash 
+python yolov8/data_preparation.py \
+  --dataset_root path/to/coco
+```
 
-- model options (trained models)
-  - split - a (early split)
-    - checkpoints/121a-bottleneck2_a16/weights/last.pt
-    - checkpoints/122a-bottleneck2_a32/weights/last.pt
-    - checkpoints/123a-bottleneck2_a64/weights/last.pt
-    - checkpoints/201a-bottleneck_a/weights/last.pt
-    - checkpoints/131a-bottleneck2_a16/weights/last.pt  (trained with frozen weights)
-    - checkpoints/132a-bottleneck2_a32/weights/last.pt  (trained with frozen weights)
-    - checkpoints/133a-bottleneck2_a64/weights/last.pt  (trained with frozen weights)
-    - checkpoints/211a-bottleneck_a/weights/last.pt
-  
-  - split - b (middle split)
-    - checkpoints/124a-bottleneck2_b16/weights/last.pt
-    - checkpoints/125a-bottleneck2_b32/weights/last.pt
-    - checkpoints/126a-bottleneck2_b64/weights/last.pt
-    - checkpoints/202a-bottleneck_b/weights/last.pt
-    - checkpoints/134a-bottleneck2_b16/weights/last.pt  (trained with frozen weights)
-    - checkpoints/135a-bottleneck2_b32/weights/last.pt  (trained with frozen weights)
-    - checkpoints/136a-bottleneck2_b64/weights/last.pt  (trained with frozen weights)
-    - checkpoints/212a-bottleneck_b/weights/last.pt
-  
-  - split - c (late split)
-    - checkpoints/127a-bottleneck2_c16/weights/last.pt
-    - checkpoints/128a-bottleneck2_c32/weights/last.pt
-    - checkpoints/129a-bottleneck2_c64/weights/last.pt
-    - checkpoints/203a-bottleneck_c/weights/last.pt
-    - checkpoints/137a-bottleneck2_c16/weights/last.pt  (trained with frozen weights)
-    - checkpoints/138a-bottleneck2_c32/weights/last.pt  (trained with frozen weights)
-    - checkpoints/139a-bottleneck2_c64/weights/last.pt  (trained with frozen weights)
-    - checkpoints/213a-bottleneck_c/weights/last.pt
+## Train model
+```bash 
+python yolov8/yolo8_train.py \
+  --model_name ../configs/yolo8/models/yolov8m_early_bn-1.yaml \
+  --data_path ../configs/yolo8/models/coco.yaml \
+  --workers 4 \
+  --epochs 36 \
+  --optimizer "SGD" \
+  --lr0 0.005 \
+  --batch 16 \
+  --yolo_checkpoint ../yolo_weights/yolov8m.pt
+```
 
-
-- model options (random weights)
-  - split - a (early split)
-    - configs/yolo8/models/yolov8m_a16_bottleneck2.yaml
-    - configs/yolo8/models/yolov8m_a32_bottleneck2.yaml
-    - configs/yolo8/models/yolov8m_a64_bottleneck2.yaml
-    - configs/yolo8/models/yolov8m_a_bottleneck3.yaml
- 
-  - split - b (middle split)
-    - configs/yolo8/models/yolov8m_b16_bottleneck2.yaml
-    - configs/yolo8/models/yolov8m_b32_bottleneck2.yaml
-    - configs/yolo8/models/yolov8m_b64_bottleneck2.yaml
-    - configs/yolo8/models/yolov8m_b_bottleneck3.yaml
-
-  - split - c (late split)
-    - configs/yolo8/models/yolov8m_c16_bottleneck2.yaml
-    - configs/yolo8/models/yolov8m_c32_bottleneck2.yaml
-    - configs/yolo8/models/yolov8m_c64_bottleneck2.yaml
-    - configs/yolo8/models/yolov8m_c_bottleneck3.yaml
-
+## Evaluation
+```bash 
+python yolov8/yolo8_eval.py \
+  --dataset_path ../configs/yolo8/models/coco.yaml \
+  --checkpoint_path path/to/checkpoint.pt
+```
