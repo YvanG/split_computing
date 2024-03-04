@@ -10,7 +10,9 @@ class ut_yolo_model:
 
     def __call__(self, x):
         x = torch.from_numpy(x).permute(2, 0, 1).unsqueeze(0).float()/255   # v budoucnu lze napsat normalizaci
-        return self.model(x)
+        x = self.model(x)
+        boxes = x[0].boxes.data.cpu().numpy()
+        return [boxes]
 
 
 def ut_yolo8_tail_only():
@@ -20,11 +22,10 @@ def ut_yolo8_tail_only():
 
 
 if __name__ == '__main__':
-    import numpy as np
-
-    rand_input = np.round(np.random.rand(640, 640, 3)*255).astype(np.uint8)     # simulate input from camera
+    import cv2
+    input_img = cv2.imread('images/sample.jpg')
 
     head, tail = ut_yolo8_tail_only()
 
-    output = head(rand_input)
+    output = head(input_img)
     output2 = tail(output)
